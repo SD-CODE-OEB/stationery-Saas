@@ -3,7 +3,8 @@ import { Toaster } from "sonner";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-// import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const poppinsSans = Poppins({
   variable: "--font-poppins-sans",
@@ -33,9 +34,10 @@ export default function RootLayout({
         className={`${poppinsSans.variable} ${poppinsMono.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          {/* <Navbar /> */}
+          <Navbar />
           {children}
           <Toaster position="top-right" closeButton richColors />
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
