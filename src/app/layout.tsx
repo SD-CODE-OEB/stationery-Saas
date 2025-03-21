@@ -1,10 +1,11 @@
 import "./globals.css";
+import { Suspense } from "react";
 import { Toaster } from "sonner";
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { Poppins } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const poppinsSans = Poppins({
   variable: "--font-poppins-sans",
@@ -35,8 +36,10 @@ export default function RootLayout({
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Navbar />
-          {children}
-          <Toaster position="top-right" closeButton richColors />
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+            <Toaster position="top-right" closeButton richColors />
+          </Suspense>
           <Footer />
         </ThemeProvider>
       </body>
