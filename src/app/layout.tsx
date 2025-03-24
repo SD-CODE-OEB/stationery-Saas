@@ -37,16 +37,16 @@ export default function RootLayout({
         className={`${poppinsSans.variable} ${poppinsMono.variable} antialiased bg-background text-foreground`}
       >
         <ClientProviders>
-          <AuthProvider>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-              <Navbar />
-              <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Loading...</div>}>
+            <AuthProvider>
+              <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+                <Navbar />
                 {children}
                 <Toaster position="top-right" closeButton richColors />
-              </Suspense>
-              <Footer />
-            </ThemeProvider>
-          </AuthProvider>
+                <Footer />
+              </ThemeProvider>
+            </AuthProvider>
+          </Suspense>
         </ClientProviders>
       </body>
     </html>
