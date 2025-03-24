@@ -3,7 +3,7 @@
 import React from 'react';
 import { z } from 'zod';
 import Link from 'next/link';
-import useStore from '@/stores/store';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { MyErrors } from '@/lib/errorSchema';
+import { useAuth } from '@/context/AuthContext';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -26,6 +28,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 const SignUpPage = () => {
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirect') || '/';
@@ -35,7 +38,16 @@ const SignUpPage = () => {
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [authError, setAuthError] = React.useState<string | null>(null);
 
-  const { setUser } = useStore();
+  const { login, isAuthenticated } = useAuth();
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push('/');
+      }
+    }
+  }, [isAuthenticated, redirectTo, router]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -53,24 +65,16 @@ const SignUpPage = () => {
 
     try {
       // In a real app, this would be an API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API delay
-
-      const newUser = {
-        _id: `user_${Date.now()}`,
-        name: data.name,
-        email: data.email,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}`,
-        isAdmin: false,
-        isLoggedIn: true,
-        token: 'mock-jwt-token',
-      };
-
-      setUser(newUser);
+      // Simulate API delay
+      await axios.post('/api/auth', data);
+      login({ email: data.email, password: data.password });
       router.push(redirectTo);
 
-    } catch (error) {
-      setAuthError('An error occurred during sign up');
-      console.error(error);
+    } catch (error: unknown) {
+      const err = error as MyErrors;
+      setAuthError(err.error?.response?.data?.response || 'An error occurred. Please try again later.');
+      console.error('SignUp Error:', err);
+
     } finally {
       setIsLoading(false);
     }
@@ -140,7 +144,7 @@ const SignUpPage = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel htmlFor='password'>Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input

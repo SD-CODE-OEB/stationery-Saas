@@ -36,12 +36,16 @@ import {
   SheetTitle,
   SheetTrigger
 } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const { isAuthenticated } = useAuth();
   const { theme, setTheme } = useTheme();
-  const { isLoggedIn, name, avatar, clearUser, itemCount } = useStore();
-  const firstName = name ? name.split(' ')[0] : 'Guest';
+  const router = useRouter();
+  const { name, itemCount } = useStore();
+  const firstName = name ? name.split(' ')[0] : '';
   const [mounted, setMounted] = React.useState(false);
 
   // Set mounted to true after component mounts (client-side only)
@@ -75,7 +79,7 @@ const Navbar = () => {
                     </Button>
                   </Link>
                 </SheetClose>
-                {mounted && isLoggedIn && (
+                {mounted && isAuthenticated && (
                   <>
                     <SheetClose asChild>
                       <Link href="/orders">
@@ -100,7 +104,7 @@ const Navbar = () => {
                     </Button>
                   </Link>
                 </SheetClose>
-                {mounted && !isLoggedIn && (
+                {mounted && !isAuthenticated && (
                   <SheetClose asChild>
                     <Link href="/auth/signin">
                       <Button variant="default" className="mt-2 w-full">Sign In</Button>
@@ -136,35 +140,12 @@ const Navbar = () => {
 
         <div className="flex items-center gap-1 sm:gap-3">
           {/* Theme toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Toggle theme">
-                {mounted ? (
-                  theme === "dark" ? (
-                    <Moon className="h-5 w-5" size={20} />
-                  ) : (
-                    <Sun className="h-5 w-5" size={20} />
-                  )
-                ) : (
-                  <div className="h-5 w-5" /> // Empty placeholder during SSR
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                <Sun className="mr-2 h-4 w-4" size={20} />
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                <Moon className="mr-2 h-4 w-4" size={20} />
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                <Settings className="mr-2 h-4 w-4" />
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Button variant="ghost" size="icon" className="hover:scale-125 active:scale-95 cursor-pointer" aria-label="Toggle theme" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            {mounted ? (theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />) : (
+              <div className="w-5 h-5 bg-muted-foreground rounded-full animate-pulse" />
+            )}
+          </Button>
+          {/* Wishlist - mobile only */}
 
           {/* Wishlist - desktop only */}
           <Link href="/wishlist" className="hidden sm:flex">
@@ -186,13 +167,13 @@ const Navbar = () => {
           </Link>
 
           {/* User menu */}
-          {mounted ? (
-            isLoggedIn ? (
+          {
+            isAuthenticated ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2 hidden md:flex">
                     <Avatar className="h-6 w-6">
-                      <AvatarImage src={avatar} alt={name} />
+                      {/* <AvatarImage src={avatar} alt={name} /> */}
                       <AvatarFallback>{firstName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <span>{firstName}</span>
@@ -220,7 +201,9 @@ const Navbar = () => {
                     </DropdownMenuItem>
                   </Link>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => clearUser()}>
+                  <DropdownMenuItem onClick={() => {
+                    router.push('/auth/signout');
+                  }}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
                   </DropdownMenuItem>
@@ -234,9 +217,7 @@ const Navbar = () => {
                 </Button>
               </Link>
             )
-          ) : (
-            <div className="h-9 w-[70px] hidden md:block" /> // Space placeholder during SSR
-          )}
+          }
         </div>
       </div>
 
@@ -247,6 +228,8 @@ const Navbar = () => {
             type="text"
             placeholder="Search products..."
             className="pr-10"
+            id="search"
+            autoComplete="on"
           />
           <Button
             variant="ghost"

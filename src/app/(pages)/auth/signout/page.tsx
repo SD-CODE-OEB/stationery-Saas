@@ -1,45 +1,35 @@
 "use client";
 
 import React from 'react';
-import useStore from '@/stores/store';
 import { useRouter } from 'next/navigation';
 import { LogOut, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 const SignOutPage = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState(false);
-
-  const { clearUser, isLoggedIn } = useStore(state => state);
+  const { logout, isLoading, isAuthenticated } = useAuth();
 
   React.useEffect(() => {
     // If the user is already logged out, redirect to home
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       router.push('/');
     }
-  }, [isLoggedIn, router]);
+  }, [isAuthenticated, router]);
 
   const handleSignOut = async () => {
-    setIsLoading(true);
-
-    try {
-      // In a real app, this would include an API call to invalidate the token
-      await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
-      clearUser();
-      router.push('/');
-    } catch (error) {
-      console.error('Error during sign out:', error);
-    } finally {
-      setIsLoading(false);
+    if (isLoading) {
+      return;
     }
+    logout();
   };
 
   const handleCancel = () => {
     router.back();
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return null; // Will redirect in useEffect
   }
 

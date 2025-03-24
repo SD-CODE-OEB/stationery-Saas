@@ -12,6 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { CreditCard, Loader2, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useAuth } from '@/context/AuthContext';
 
 // Form validation schema
 const formSchema = z.object({
@@ -37,15 +38,14 @@ const CheckoutPage = () => {
   const {
     items,
     total,
-    isLoggedIn,
-    _id: userId,
+    $id: userId,
     name: userName,
     createOrder,
     clearCart
   } = useStore(state => state);
-
+  const { isAuthenticated } = useAuth();
   React.useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       router.push('/auth/signin?redirect=/checkout');
       return;
     }
@@ -54,7 +54,7 @@ const CheckoutPage = () => {
       router.push('/cart');
       return;
     }
-  }, [isLoggedIn, items.length, router]);
+  }, [isAuthenticated, items.length, router]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -88,7 +88,7 @@ const CheckoutPage = () => {
 
       // Create order with Zustand store
       createOrder({
-        userId,
+        userId: userId || 'guest',
         items: [...items],
         total,
         shippingAddress,
@@ -112,7 +112,7 @@ const CheckoutPage = () => {
     }
   };
 
-  if (!isLoggedIn || items.length === 0) {
+  if (!isAuthenticated || items.length === 0) {
     return null; // Will redirect in useEffect
   }
 
@@ -380,7 +380,7 @@ const CheckoutPage = () => {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     {items.map(item => (
-                      <div key={item._id} className="flex justify-between">
+                      <div key={item.$id} className="flex justify-between">
                         <span className="flex-1">
                           {item.name} <span className="text-muted-foreground">x{item.quantity}</span>
                         </span>

@@ -10,6 +10,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Order, OrderStatus } from '@/stores/orderSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Package, ChevronLeft, Truck, CreditCard, MapPin, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 // Helper function to get badge color based on status (reused from orders page)
 const getStatusColor = (status: OrderStatus) => {
@@ -34,14 +35,14 @@ const OrderDetailsPage = () => {
     const router = useRouter();
     const params = useParams();
     const orderId = params.id as string;
-    const { isLoggedIn, getOrderById } = useStore(state => state);
-
+    const { getOrderById } = useStore(state => state);
+    const { isAuthenticated } = useAuth();
     const [order, setOrder] = React.useState<Order | null>(null);
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState<string | null>(null);
 
     React.useEffect(() => {
-        if (!isLoggedIn) {
+        if (!isAuthenticated) {
             router.push('/auth/signin?redirect=/order/' + orderId);
             return;
         }
@@ -57,7 +58,7 @@ const OrderDetailsPage = () => {
         }
 
         setLoading(false);
-    }, [isLoggedIn, orderId, router, getOrderById]);
+    }, [isAuthenticated, orderId, router, getOrderById]);
 
     if (loading) {
         return (
@@ -69,7 +70,7 @@ const OrderDetailsPage = () => {
         );
     }
 
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
         return null; // Will redirect in useEffect
     }
 
@@ -142,7 +143,7 @@ const OrderDetailsPage = () => {
                     </Button>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h1 className="text-3xl font-bold">Order #{order._id}</h1>
+                            <h1 className="text-3xl font-bold">Order #{order.$id}</h1>
                             <p className="text-sm text-muted-foreground">
                                 Placed on {order.createdAt.toLocaleDateString()} at {order.createdAt.toLocaleTimeString()}
                             </p>
@@ -166,7 +167,7 @@ const OrderDetailsPage = () => {
                             <CardContent>
                                 <div className="space-y-4 divide-y">
                                     {order.items.map(item => (
-                                        <div key={item._id} className="flex gap-4 py-4 first:pt-0">
+                                        <div key={item.$id} className="flex gap-4 py-4 first:pt-0">
                                             <div className="relative h-20 w-20 rounded overflow-hidden bg-muted flex-shrink-0">
                                                 <Image
                                                     src={item.image}

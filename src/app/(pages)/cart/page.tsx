@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Trash2, MinusCircle, PlusCircle, ArrowRight, ShoppingBag } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 const CartPage = () => {
   const router = useRouter();
@@ -21,12 +22,11 @@ const CartPage = () => {
     incrQuantity,
     decrQuantity,
     clearCart,
-    isLoggedIn
   } = useStore((state) => state);
-
+  const { isAuthenticated } = useAuth();
   const handleCheckout = () => {
     setIsLoading(true);
-    if (isLoggedIn) {
+    if (isAuthenticated) {
       router.push('/checkout');
     } else {
       router.push('/auth/signin?redirect=/checkout');
@@ -64,7 +64,7 @@ const CartPage = () => {
             <Card>
               <CardContent className="p-6">
                 {items.map((item) => (
-                  <div key={item._id} className="flex flex-col sm:flex-row gap-4 py-4 border-b last:border-0">
+                  <div key={item.$id} className="flex flex-col sm:flex-row gap-4 py-4 border-b last:border-0">
                     <div className="relative h-24 w-24 rounded overflow-hidden flex-shrink-0 bg-muted">
                       <Image
                         src={item.image}
@@ -77,7 +77,7 @@ const CartPage = () => {
 
                     <div className="flex-grow">
                       <div className="flex justify-between">
-                        <Link href={`/product/${item._id}`}>
+                        <Link href={`/product/${item.$id}`}>
                           <h3 className="font-medium hover:underline">{item.name}</h3>
                         </Link>
                         <p className="font-semibold">${item.price.toFixed(2)}</p>
@@ -95,7 +95,7 @@ const CartPage = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => decrQuantity(item._id)}
+                            onClick={() => decrQuantity(item.$id)}
                           >
                             <MinusCircle className="h-4 w-4" />
                           </Button>
@@ -104,7 +104,7 @@ const CartPage = () => {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => incrQuantity(item._id)}
+                            onClick={() => incrQuantity(item.$id)}
                           >
                             <PlusCircle className="h-4 w-4" />
                           </Button>
@@ -113,7 +113,7 @@ const CartPage = () => {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => removeProduct(item._id)}
+                          onClick={() => removeProduct(item.$id)}
                           className="text-destructive"
                         >
                           <Trash2 className="h-4 w-4 mr-1" />

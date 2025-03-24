@@ -9,9 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Package, ArrowRight } from 'lucide-react';
 import { Order, OrderStatus } from '@/stores/orderSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/context/AuthContext';
 
 // Helper function to get badge color based on status
-const getStatusColor = (status: OrderStatus) => {
+export const getStatusColor = (status: OrderStatus) => {
   switch (status) {
     case 'pending':
       return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
@@ -32,22 +33,19 @@ const getStatusColor = (status: OrderStatus) => {
 
 const OrdersPage = () => {
   const router = useRouter();
-  const { isLoggedIn, _id: userId, getUserOrders } = useStore(state => state);
-
+  const { $id: userId, getUserOrders } = useStore(state => state);
+  const { isAuthenticated } = useAuth();
   const [orders, setOrders] = React.useState<Order[]>([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isAuthenticated) {
       router.push('/auth/signin?redirect=/orders');
       return;
     }
-
-    // In a real app, fetch orders from API
-    // For now, use mock data
     setOrders(getUserOrders(userId));
     setLoading(false);
-  }, [isLoggedIn, userId, router, getUserOrders]);
+  }, [userId, router, getUserOrders, isAuthenticated]);
 
   if (loading) {
     return (
@@ -59,7 +57,7 @@ const OrdersPage = () => {
     );
   }
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return null; // Will redirect in useEffect
   }
 
@@ -91,7 +89,7 @@ const OrdersPage = () => {
 
         <div className="space-y-6">
           {orders.map(order => (
-            <Card key={order._id} className="overflow-hidden">
+            <Card key={order.$id} className="overflow-hidden">
               <CardHeader className="bg-muted/50">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
@@ -99,7 +97,7 @@ const OrdersPage = () => {
                       Order placed: {order.createdAt.toLocaleString()}
                     </p>
                     <CardTitle className="text-lg font-semibold">
-                      Order #{order._id}
+                      Order #{order.$id}
                     </CardTitle>
                   </div>
 
@@ -115,7 +113,7 @@ const OrdersPage = () => {
               <CardContent className="p-6">
                 <div className="space-y-4 divide-y">
                   {order.items.map(item => (
-                    <div key={item._id} className="flex gap-4 py-4 first:pt-0">
+                    <div key={item.$id} className="flex gap-4 py-4 first:pt-0">
                       <div className="relative h-16 w-16 rounded overflow-hidden bg-muted flex-shrink-0">
                         <Image
                           src={item.image}
@@ -141,7 +139,7 @@ const OrdersPage = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/order/${order._id}`)}
+                      onClick={() => router.push(`/order/${order.$id}`)}
                     >
                       View Details
                       <ArrowRight className="ml-2 h-4 w-4" />

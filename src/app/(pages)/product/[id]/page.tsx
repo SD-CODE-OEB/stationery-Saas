@@ -10,8 +10,6 @@ import { mockProducts } from "../../../../../public/data";
 import { Product as ProductType } from "@/stores/cartSlice";
 import { ShoppingCart, MinusCircle, PlusCircle, Check } from "lucide-react";
 
-// Mock data - in a real app, fetch from API
-
 export default function ProductPage() {
   const params = useParams();
   const productId = params.id as string;
@@ -23,7 +21,7 @@ export default function ProductPage() {
 
   React.useEffect(() => {
     // In a real app, fetch from API
-    const foundProduct = mockProducts.find(p => p._id === productId);
+    const foundProduct = mockProducts.find(p => p.$id === productId);
     if (foundProduct) {
       setProduct(foundProduct);
       if (isInCart(productId)) {
@@ -39,12 +37,12 @@ export default function ProductPage() {
 
   const handleAddToCart = () => {
     if (product) {
-      if (isInCart(product._id)) {
-        updateQuantity(product._id, quantity);
+      if (isInCart(product.$id)) {
+        updateQuantity(product.$id, quantity);
       } else {
         addProduct({ ...product });
         if (quantity > 1) {
-          updateQuantity(product._id, quantity);
+          updateQuantity(product.$id, quantity);
         }
       }
     }
@@ -63,7 +61,7 @@ export default function ProductPage() {
     );
   }
 
-  const productInCart = isInCart(product._id);
+  const productInCart = isInCart(product.$id);
 
   return (
     <>
