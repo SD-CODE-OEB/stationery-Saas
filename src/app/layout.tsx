@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Poppins } from "next/font/google";
+import ClientProviders from "./client-providers";
+import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const poppinsSans = Poppins({
@@ -34,14 +36,18 @@ export default function RootLayout({
       <body
         className={`${poppinsSans.variable} ${poppinsMono.variable} antialiased bg-background text-foreground`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Navbar />
-          <Suspense fallback={<div>Loading...</div>}>
-            {children}
-            <Toaster position="top-right" closeButton richColors />
-          </Suspense>
-          <Footer />
-        </ThemeProvider>
+        <ClientProviders>
+          <AuthProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              <Navbar />
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+                <Toaster position="top-right" closeButton richColors />
+              </Suspense>
+              <Footer />
+            </ThemeProvider>
+          </AuthProvider>
+        </ClientProviders>
       </body>
     </html>
   );

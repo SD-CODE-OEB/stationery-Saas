@@ -8,7 +8,7 @@ export const mockProducts: (ProductType & {
   rating: number;
 })[] = [
   {
-    _id: "1",
+    $id: "1",
     name: "Premium Notebook",
     price: 12.99,
     image:
@@ -22,7 +22,7 @@ export const mockProducts: (ProductType & {
     rating: 4.5,
   },
   {
-    _id: "2",
+    $id: "2",
     name: "Colored Pencil Set",
     price: 8.99,
     image:
@@ -36,7 +36,7 @@ export const mockProducts: (ProductType & {
     rating: 4.8,
   },
   {
-    _id: "3",
+    $id: "3",
     name: "Mechanical Pencil",
     price: 5.49,
     image:
@@ -50,7 +50,7 @@ export const mockProducts: (ProductType & {
     rating: 4.2,
   },
   {
-    _id: "4",
+    $id: "4",
     name: "Fountain Pen",
     price: 24.99,
     image:
@@ -64,7 +64,7 @@ export const mockProducts: (ProductType & {
     rating: 4.9,
   },
   {
-    _id: "5",
+    $id: "5",
     name: "Sticky Notes",
     price: 3.99,
     image:
@@ -78,7 +78,7 @@ export const mockProducts: (ProductType & {
     rating: 4.0,
   },
   {
-    _id: "6",
+    $id: "6",
     name: "Desk Organizer",
     price: 18.99,
     image:
@@ -92,7 +92,7 @@ export const mockProducts: (ProductType & {
     rating: 4.7,
   },
   {
-    _id: "7",
+    $id: "7",
     name: "Designer Notebook",
     price: 14.99,
     image:
@@ -106,7 +106,7 @@ export const mockProducts: (ProductType & {
     rating: 4.6,
   },
   {
-    _id: "8",
+    $id: "8",
     name: "Watercolor Set",
     price: 19.99,
     image:
