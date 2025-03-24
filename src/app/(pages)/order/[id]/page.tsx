@@ -145,7 +145,7 @@ const OrderDetailsPage = () => {
                         <div>
                             <h1 className="text-3xl font-bold">Order #{order.$id}</h1>
                             <p className="text-sm text-muted-foreground">
-                                Placed on {order.createdAt.toLocaleDateString()} at {order.createdAt.toLocaleTimeString()}
+                                Placed on {order.createdAt instanceof Date ? order.createdAt.toLocaleDateString() : 'N/A'} at {order.createdAt instanceof Date ? order.createdAt.toLocaleTimeString() : 'N/A'}
                             </p>
                         </div>
                         <span className={`text-sm px-3 py-1 rounded-full inline-flex items-center justify-center font-medium ${getStatusColor(order.status)}`}>

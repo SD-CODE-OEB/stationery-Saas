@@ -2,16 +2,15 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import useStore from '@/stores/store';
 import { useRouter } from 'next/navigation';
+import { Order } from '@/stores/orderSlice';
+import { getStatusColor } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Package, User, LogOut, Settings, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/context/AuthContext';
-import { Order } from '@/stores/orderSlice';
-import Image from 'next/image';
-import { getStatusColor } from '../orders/page';
-
 const ProfilePage = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
