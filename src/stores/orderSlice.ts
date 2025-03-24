@@ -26,12 +26,12 @@ export type OrderStatus =
 
 // Single order structure
 export interface Order {
-  _id: string;
+  $id: string;
   userId: string;
   items: CartState["items"];
   total: number;
   status: OrderStatus;
-  createdAt: Date;
+  createdAt: Date | "N/A";
   updatedAt: Date;
   shippingAddress: Address;
   paymentInfo: Payment;
@@ -49,7 +49,7 @@ export interface OrderState {
 // Actions to manipulate orders
 interface OrderActions {
   createOrder: (
-    order: Omit<Order, "_id" | "createdAt" | "updatedAt" | "status">
+    order: Omit<Order, "$id" | "createdAt" | "updatedAt" | "status">
   ) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus) => void;
   getOrderById: (orderId: string) => Order | undefined;

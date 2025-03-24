@@ -1,5 +1,5 @@
 export interface Product {
-  _id: string;
+  $id: string;
   name: string;
   price: number;
   image: string;
@@ -21,14 +21,14 @@ export interface CartState {
 
 interface CartActions {
   addProduct: (product: Product) => void;
-  removeProduct: (product: Product["_id"]) => void;
-  incrQuantity: (product: Product["_id"]) => void;
-  decrQuantity: (product: Product["_id"]) => void;
-  getProduct: (product: Product["_id"]) => CartItem;
+  removeProduct: (product: Product["$id"]) => void;
+  incrQuantity: (product: Product["$id"]) => void;
+  decrQuantity: (product: Product["$id"]) => void;
+  getProduct: (product: Product["$id"]) => CartItem;
   setCartTotal: (total: number) => void;
   clearCart: () => void;
-  updateQuantity: (productId: Product["_id"], quantity: number) => void; // Set specific quantity
-  isInCart: (productId: Product["_id"]) => boolean; // Check if product exists in cart
+  updateQuantity: (productId: Product["$id"], quantity: number) => void; // Set specific quantity
+  isInCart: (productId: Product["$id"]) => boolean; // Check if product exists in cart
 }
 
 export type CartSlice = CartState & CartActions;

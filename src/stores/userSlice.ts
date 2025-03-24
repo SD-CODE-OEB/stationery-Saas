@@ -1,11 +1,11 @@
-interface User {
-  _id: string;
+export interface User {
+  $id: string | null;
   name: string;
   email: string;
+  labels: string[];
   token?: string;
-  avatar?: string;
   isAdmin?: boolean;
-  isLoggedIn?: boolean;
+  status?: boolean;
 }
 
 interface UserActions {
@@ -18,11 +18,11 @@ interface UserActions {
 export type UserSlice = User & UserActions;
 
 export const initialState: User = {
-  _id: "",
+  $id: null,
   name: "",
   email: "",
   token: "",
-  avatar: "",
+  labels: [],
   isAdmin: false,
-  isLoggedIn: false,
+  status: false,
 };

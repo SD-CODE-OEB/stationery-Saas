@@ -9,19 +9,20 @@ const useStore = create<StoreState>((set, get) => ({
   ...userInitialState,
 
   // User Actions
-  setUser: (user) => set(() => ({ ...user })),
+  setUser: (user) => set(() => (user ? { ...user } : userInitialState)),
   updateUser: (user) => set((state) => ({ ...state, ...user })),
   getUser: (email) => {
     const state = get();
     if (state.email === email) {
       return {
-        _id: state._id,
+        $id: state.$id,
         name: state.name,
         email: state.email,
         token: state.token,
-        avatar: state.avatar,
+        // avatar: state.avatar,
+        labels: state.labels,
         isAdmin: state.isAdmin,
-        isLoggedIn: state.isLoggedIn,
+        status: state.status,
       };
     }
     return userInitialState;
@@ -35,7 +36,7 @@ const useStore = create<StoreState>((set, get) => ({
   addProduct: (product) =>
     set((state) => {
       const existingItemIndex = state.items.findIndex(
-        (item) => item._id === product._id
+        (item) => item.$id === product.$id
       );
 
       if (existingItemIndex !== -1) {
@@ -73,11 +74,11 @@ const useStore = create<StoreState>((set, get) => ({
 
   removeProduct: (productId) =>
     set((state) => {
-      const item = state.items.find((item) => item._id === productId);
+      const item = state.items.find((item) => item.$id === productId);
       if (!item) return state;
 
       return {
-        items: state.items.filter((item) => item._id !== productId),
+        items: state.items.filter((item) => item.$id !== productId),
         itemCount: state.itemCount - item.quantity,
         total: state.total - (item.subtotal || item.price * item.quantity),
         loading: false,
@@ -88,7 +89,7 @@ const useStore = create<StoreState>((set, get) => ({
   incrQuantity: (productId) =>
     set((state) => {
       const updatedItems = state.items.map((item) =>
-        item._id === productId
+        item.$id === productId
           ? {
               ...item,
               quantity: item.quantity + 1,
@@ -97,7 +98,7 @@ const useStore = create<StoreState>((set, get) => ({
           : item
       );
 
-      const foundItem = updatedItems.find((item) => item._id === productId);
+      const foundItem = updatedItems.find((item) => item.$id === productId);
       return {
         items: updatedItems,
         itemCount: state.itemCount + 1,
@@ -109,14 +110,14 @@ const useStore = create<StoreState>((set, get) => ({
 
   decrQuantity: (productId) =>
     set((state) => {
-      const itemIndex = state.items.findIndex((item) => item._id === productId);
+      const itemIndex = state.items.findIndex((item) => item.$id === productId);
       if (itemIndex === -1) return state;
 
       const item = state.items[itemIndex];
 
       if (item.quantity === 1) {
         return {
-          items: state.items.filter((item) => item._id !== productId),
+          items: state.items.filter((item) => item.$id !== productId),
           itemCount: state.itemCount - 1,
           total: state.total - item.price,
           loading: false,
@@ -141,7 +142,7 @@ const useStore = create<StoreState>((set, get) => ({
     }),
 
   getProduct: (productId) => {
-    const item = get().items.find((item) => item._id === productId);
+    const item = get().items.find((item) => item.$id === productId);
     if (!item) throw new Error("Product not found in cart");
     return item;
   },
@@ -152,7 +153,7 @@ const useStore = create<StoreState>((set, get) => ({
 
   updateQuantity: (productId, quantity) =>
     set((state) => {
-      const itemIndex = state.items.findIndex((item) => item._id === productId);
+      const itemIndex = state.items.findIndex((item) => item.$id === productId);
       if (itemIndex === -1) return state;
 
       const item = state.items[itemIndex];
@@ -174,7 +175,7 @@ const useStore = create<StoreState>((set, get) => ({
       };
     }),
 
-  isInCart: (productId) => get().items.some((item) => item._id === productId),
+  isInCart: (productId) => get().items.some((item) => item.$id === productId),
 
   // Order State
   ...orderInitialState,
@@ -184,7 +185,7 @@ const useStore = create<StoreState>((set, get) => ({
     set((state) => {
       const newOrder = {
         ...orderData,
-        _id: `order_${Date.now()}_${Math.random()
+        $id: `order_${Date.now()}_${Math.random()
           .toString(36)
           .substring(2, 9)}`,
         createdAt: new Date(),
@@ -203,7 +204,7 @@ const useStore = create<StoreState>((set, get) => ({
   updateOrderStatus: (orderId, status) =>
     set((state) => ({
       orders: state.orders.map((order) =>
-        order._id === orderId
+        order.$id === orderId
           ? { ...order, status, updatedAt: new Date() }
           : order
       ),
@@ -212,7 +213,7 @@ const useStore = create<StoreState>((set, get) => ({
     })),
 
   getOrderById: (orderId) => {
-    return get().orders.find((order) => order._id === orderId);
+    return get().orders.find((order) => order.$id === orderId);
   },
 
   getUserOrders: (userId) => {
@@ -222,7 +223,7 @@ const useStore = create<StoreState>((set, get) => ({
   cancelOrder: (orderId) =>
     set((state) => ({
       orders: state.orders.map((order) =>
-        order._id === orderId
+        order.$id === orderId
           ? { ...order, status: "cancelled" as const, updatedAt: new Date() }
           : order
       ),

@@ -560,7 +560,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-6">
                   {filteredProducts.map(product => (
                     <Product
-                      key={product._id}
+                      key={product.$id}
                       product={product}
                       isNew={product.isNew}
                       isOnSale={product.isOnSale}
